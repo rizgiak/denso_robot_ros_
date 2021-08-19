@@ -1,16 +1,16 @@
 <launch>
   <!-- Override robot_name argument -->
-  <arg name="robot_name" default="vs060" />
+  <arg name="robot_name" default="cobotta" />
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if sim=false, a ip_address argument is required -->
-  <arg name="sim" default="true" />
+  <arg name="sim" default="false" />
   <arg name="ip_address" default="192.168.0.1" />
 
   <!-- If you want to change send and recieve format of denso_robot_control, -->
   <!-- you can specify the send_format and recv_format parameters -->
-  <arg name="send_format" default="288" />
-  <arg name="recv_format" default="292" />
+  <arg name="send_format" default="0" />
+  <arg name="recv_format" default="2" />
 
   <arg name="bcap_slave_control_cycle_msec" default="8" />
 
