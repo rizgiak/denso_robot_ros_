@@ -1,10 +1,14 @@
 <launch>
   <!-- Override robot_name argument -->
   <arg name="robot_name" default="cobotta" />
+  <arg name="pipeline" default="ompl" />
+
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
 
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
   <!--  - if sim=false, a ip_address argument is required -->
-  <arg name="sim" default="false" />
+  <arg name="sim" default="true" />
   <arg name="ip_address" default="192.168.0.1" />
 
   <!-- If you want to change send and recieve format of denso_robot_control, -->
@@ -49,10 +53,13 @@
   <include file="$(find denso_robot_moveit_config)/launch/move_group.launch">
     <arg name="publish_monitored_planning_scene" value="true" />
     <arg name="robot_name" value="$(arg robot_name)" />
+    <arg name="pipeline" value="$(arg pipeline)"  />
+    <arg name="debug" value="$(arg debug)"/>
   </include>
 
   <include file="$(find denso_robot_moveit_config)/launch/moveit_rviz.launch">
     <arg name="config" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
   </include>
 
   <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->

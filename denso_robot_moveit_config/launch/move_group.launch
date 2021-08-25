@@ -6,6 +6,8 @@
     <arg name="robot_name" value="$(arg robot_name)" />
   </include>
 
+  <arg name="pipeline" default="ompl" />
+
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
@@ -24,7 +26,8 @@
 
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find denso_robot_moveit_config)/launch/planning_pipeline.launch.xml">
-    <arg name="pipeline" value="ompl" />
+    <arg name="pipeline" value="$(arg pipeline)" />
+    
   </include>
 
   <!-- Trajectory Execution Functionality -->
@@ -45,9 +48,12 @@
     <!-- Set the display variable, in case OpenGL code is used internally -->
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
 
+    <rosparam command="load" file="$(find denso_robot_moveit_config)/config/planning.yaml"/>
+
     <param name="allow_trajectory_execution" value="$(arg allow_trajectory_execution)"/>
     <param name="max_safe_path_cost" value="$(arg max_safe_path_cost)"/>
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+    <param name="default_planning_pipeline" value="$(arg pipeline)" />
 
     <!-- MoveGroup capabilities to load -->
     <param name="capabilities" value="move_group/MoveGroupCartesianPathService
