@@ -43,8 +43,11 @@
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
    ns="/$(arg robot_name)" args="joint_state_controller arm_controller" />
 
+  <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+   ns="/$(arg robot_name)" args="joint_state_controller arm_controller gripper_ntlab_controller" /> -->
+
   <node name="robot_state_publisher" pkg="robot_state_publisher"
         type="robot_state_publisher" respawn="false" output="screen" required="true">
-    <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
+    <remap from="/joint_states" to="/$(arg robot_name)/all_joint_states" />
   </node>
 </launch>
