@@ -41,6 +41,14 @@ catkin_package(
 
 include_directories(${THIS_PACKAGE_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS})
 
+add_executable(move_group_in_hand_manipulation_hor src/move_group_in_hand_manipulation_hor.cpp)
+target_link_libraries(move_group_in_hand_manipulation_hor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS move_group_in_hand_manipulation_hor DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(move_group_in_hand_manipulation_limit src/move_group_in_hand_manipulation_limit.cpp)
+target_link_libraries(move_group_in_hand_manipulation_limit ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS move_group_in_hand_manipulation_limit DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 add_executable(move_group_in_hand_manipulation src/move_group_in_hand_manipulation.cpp)
 target_link_libraries(move_group_in_hand_manipulation ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS move_group_in_hand_manipulation DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
