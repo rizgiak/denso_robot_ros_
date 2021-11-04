@@ -41,6 +41,18 @@ catkin_package(
 
 include_directories(${THIS_PACKAGE_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS})
 
+add_executable(ik_grip src/ik_grip.cpp)
+target_link_libraries(ik_grip ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS ik_grip DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(move_group_in_hand_manipulation_hor_data src/move_group_in_hand_manipulation_hor_data.cpp)
+target_link_libraries(move_group_in_hand_manipulation_hor_data ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS move_group_in_hand_manipulation_hor_data DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(move_group_in_hand_manipulation_data src/move_group_in_hand_manipulation_data.cpp)
+target_link_libraries(move_group_in_hand_manipulation_data ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+install(TARGETS move_group_in_hand_manipulation_data DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
 add_executable(move_group_in_hand_manipulation_hor src/move_group_in_hand_manipulation_hor.cpp)
 target_link_libraries(move_group_in_hand_manipulation_hor ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS move_group_in_hand_manipulation_hor DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
