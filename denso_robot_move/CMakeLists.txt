@@ -86,4 +86,9 @@ target_link_libraries(move_gripper ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 install(TARGETS move_gripper DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 
+catkin_install_python(PROGRAMS
+  scripts/move_interface.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
