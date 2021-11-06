@@ -32,7 +32,7 @@ def allClose(goal, actual, tolerance):
                 return False
 
     elif type(goal) is geometry_msgs.msg.PoseStamped:
-        return all_close(goal.pose, actual.pose, tolerance)
+        return allClose(goal.pose, actual.pose, tolerance)
 
     elif type(goal) is geometry_msgs.msg.Pose:
         x0, y0, z0, qx0, qy0, qz0, qw0 = pose_to_list(actual)
@@ -46,9 +46,12 @@ def allClose(goal, actual, tolerance):
     return True
 
 
-class MoveGripperNTLab(object):
+class GripperNTLab(object):
+
+    gripper_pose = CartesianPosition()
+
     def __init__(self) -> None:
-        super(MoveGripperNTLab, self).__init__()
+        super(GripperNTLab, self).__init__()
 
         moveit_commander.roscpp_initialize(sys.argv)
 
@@ -56,12 +59,18 @@ class MoveGripperNTLab(object):
         rospy.Subscriber(
             "cobotta/all_joint_states", JointState, self.jointStateCallback
         )
+        gripper_pub = rospy.Publisher(
+            "cobotta/hand_set_cartesian", CartesianPosition, queue_size=10
+        )
 
         robot = moveit_commander.RobotCommander()
         scene = moveit_commander.PlanningSceneInterface()
 
         group_name = "arm"
         move_group = moveit_commander.MoveGroupCommander(group_name)
+
+        move_group.set_max_velocity_scaling_factor(0.7)
+        move_group.set_max_acceleration_scaling_factor(0.7)
 
         display_trajectory_publisher = rospy.Publisher(
             "/move_group/display_planned_path",
@@ -94,49 +103,24 @@ class MoveGripperNTLab(object):
         self.planning_frame = planning_frame
         self.eef_link = eef_link
         self.group_names = group_names
+        self.gripper_pub = gripper_pub
 
-    def goToPoseGoal(self):
-
-        move_group = self.move_group
-
-        pose_goal = geometry_msgs.msg.Pose()
-        pose_goal.position.x = 0.00509275
-        pose_goal.position.y = 0.136243
-        pose_goal.position.z = 0.371877
-        pose_goal.orientation.w = 0.00222073
-        pose_goal.orientation.x = -0.773065
-        pose_goal.orientation.y = 0.63426
-        pose_goal.orientation.z = -0.00891114
-
-        move_group.set_pose_target(pose_goal)
-
-        ## Now, we call the planner to compute the plan and execute it.
-        plan = move_group.go(wait=True)
-        # Calling `stop()` ensures that there is no residual movement
-        move_group.stop()
-        # It is always good to clear your targets after planning with poses.
-        # Note: there is no equivalent function for clear_joint_value_targets()
-        move_group.clear_pose_targets()
-
-        current_pose = self.move_group.get_current_pose().pose
-        return allClose(pose_goal, current_pose, 0.01)
-
-    def goToPoseGoal2(self):
+    def cobottaExecutePoseGoal(self, position):
 
         move_group = self.move_group
 
         pose_goal = geometry_msgs.msg.Pose()
-        pose_goal.position.x = -0.00276607
-        pose_goal.position.y = 0.175783
-        pose_goal.position.z = 0.371435
-        pose_goal.orientation.w = 0.00224691
-        pose_goal.orientation.x = -0.772995
-        pose_goal.orientation.y = 0.634345
-        pose_goal.orientation.z = -0.008953
+        pose_goal.position.x = position[0]
+        pose_goal.position.y = position[1]
+        pose_goal.position.z = position[2]
+        pose_goal.orientation.w = position[3]
+        pose_goal.orientation.x = position[4]
+        pose_goal.orientation.y = position[5]
+        pose_goal.orientation.z = position[6]
 
         move_group.set_pose_target(pose_goal)
 
-        ## Now, we call the planner to compute the plan and execute it.
+        # call planner to execute
         plan = move_group.go(wait=True)
         # Calling `stop()` ensures that there is no residual movement
         move_group.stop()
@@ -156,18 +140,67 @@ class MoveGripperNTLab(object):
             elif t == "r_hand_rod_b":
                 f2 = data.position[i]
             i += 1
-        #rospy.loginfo("f1:{}, f2:{}".format(f1, f2))
+        # rospy.loginfo("f1:{}, f2:{}".format(f1, f2))
+
+    def gripperSetPose(self, position):
+        self.gripper_pose.x1 = position[0]
+        self.gripper_pose.y1 = position[1]
+        self.gripper_pose.x2 = position[2]
+        self.gripper_pose.y2 = position[3]
+        self.gripper_pose.rad = position[4]
+        self.gripper_pose.torque = True
+
+    def gripperExecute(self):
+        gripper_pub = self.gripper_pub
+        gripper_pub.publish(self.gripper_pose)
 
 
 def main():
     try:
+        print(sys.version)
         print("Move Interface")
         input("Press 'Enter' to start.")
-        test = MoveGripperNTLab()
-        test.goToPoseGoal()
+        ntlab = GripperNTLab()
+        position = [
+            0.00509275,
+            0.136243,
+            0.371877,
+            0.00222073,
+            -0.773065,
+            0.63426,
+            -0.00891114,
+        ]
+        ntlab.cobottaExecutePoseGoal(position)
+
         input("Press 'Enter' to next.")
-        test.goToPoseGoal2()
+        position = [
+            -0.00276607,
+            0.175783,
+            0.371435,
+            0.00224691,
+            -0.772995,
+            0.634345,
+            -0.008953,
+        ]
+        ntlab.cobottaExecutePoseGoal(position)
+
+        input("Press 'Enter' to next.")
+        gripper_pos = [0.19, -0.06, 0.19, 0.06, 0]
+        ntlab.gripperSetPose(gripper_pos)
+        ntlab.gripperExecute()
+
+        input("Press 'Enter' to next.")
+        gripper_pos = [0.235, -0.05, 0.235, 0.05, 0]
+        ntlab.gripperSetPose(gripper_pos)
+        ntlab.gripperExecute()
+
+        input("Press 'Enter' to next.")
+        gripper_pos = [0.19, -0.06, 0.19, 0.06, 0]
+        ntlab.gripperSetPose(gripper_pos)
+        ntlab.gripperExecute()
+
         input("Press 'Enter' to end.")
+
     except rospy.ROSInterruptException:
         print("error")
         return
