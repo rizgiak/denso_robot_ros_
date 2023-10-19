@@ -1,0 +1,6 @@
+<launch>
+
+  <node name="move_group_interface_two_points" pkg="denso_robot_move" type="move_group_interface_two_points" respawn="false" output="screen">
+  </node>
+
+</launch>
